@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -17,15 +16,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Printf("Looks like you're searching for %s", *filenameToSearch)
+	fmt.Printf("Searching for %s...\n", *filenameToSearch)
 
-	found, err := Query(".", *filenameToSearch)
+	foundFiles, err := Query(".", *filenameToSearch)
 
 	if err != nil {
-		fmt.Printf("Couldn't find %s", *filenameToSearch)
+		fmt.Printf("Couldn't find %s\n", *filenameToSearch)
 		os.Exit(0)
 	}
-	filepath, _ := filepath.Abs(found[0].Name())
 
-	fmt.Printf("Found %s at %s", found[0].Name(), filepath)
+	fmt.Println("Found the following list of matches:")
+	for _, file := range foundFiles {
+		filepath, err := filepath.Abs(file.Name())
+		if err != nil {
+			fmt.Printf("Error: %s\n", err)
+			os.Exit(0)
+		}
+		fmt.Printf("%s\n", filepath)
+	}
 }
